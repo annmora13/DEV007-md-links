@@ -1,4 +1,4 @@
-const { mdLinks }= require('../src/index.js');
+const { mdLinks }= require('../index');
 
 
 describe('mdLinks', () => {
@@ -8,7 +8,7 @@ describe('mdLinks', () => {
   // });
 
   it('should reject when the path doesnt exists', () => {
-    return mdLinks('/erika/cursos/noexise.ms').catch((error) => {
+    return mdLinks('/cursos/noexise.ms').catch((error) => {
       expect(error).toBe('La ruta no existe');
     })
   });
