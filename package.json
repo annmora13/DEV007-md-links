@@ -8,5 +8,25 @@
     "createdAt": "2023-06-20T14:05:58.211Z",
     "version": "6.3.0",
     "commit": "e129ade681adff8cbb19f82e63f688fef2f08f32"
-  }
+  },
+  "scripts": {
+    "build": "babel src -d lib",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "eslint": "^8.44.0",
+    "jest": "^29.6.1",
+    "node": "^20.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.9",
+    "@babel/preset-env": "^7.22.9"
+  },
+  "author": "Anakarina Mora Faneite",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sara-rioseco/DEV007-md-links/issues"
+  },
+  "homepage": "https://github.com/sara-rioseco/DEV007-md-links#readme"
 }
