@@ -15,5 +15,32 @@ describe('mdLinks', () => {
       expect(error.message).toBe('La ruta no existe');
     })
   });
-
 });
+
+const path = require('path');
+
+describe('isAbsolute', () => {
+  it('should return true for absolute paths', () => {
+    const absolutePaths = [
+      '/path/to/file.txt',
+      '/another/path/to/folder',
+      '/absolute/path/without/file',
+    ];
+    absolutePaths.forEach((absolutePath) => {
+      expect(path.isAbsolute(absolutePath)).toBe(true);
+    });
+  });
+
+  it('should return false for relative paths', () => {
+    const relativePaths = [
+      './relative/path/to/file.txt',
+      '../another/relative/path',
+      'file.js',
+    ];
+    relativePaths.forEach((relativePath) => {
+      expect(path.isAbsolute(relativePath)).toBe(false);
+    });
+  });
+});
+
+
