@@ -14,7 +14,9 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "babel": "^6.23.0",
+    "chalk": "^4.1.2",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "jest": "^29.6.1",
     "node": "^20.4.0"
@@ -22,7 +24,11 @@
   "devDependencies": {
     "@babel/cli": "^7.22.9",
     "@babel/preset-env": "^7.22.9",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "pettier": "^1.1.0"
   },
   "author": "Anakarina Mora Faneite",
