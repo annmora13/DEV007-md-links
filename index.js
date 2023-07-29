@@ -4,11 +4,10 @@ const chalk = require("chalk");
 const axios = require("axios");
 const { get } = require("https");
 
-// console.log(chalk.blue('Hello world!'));
 //console.log(axios.isCancel('something'));
 
 const mdLinks = (filePath, options) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let userPath;
 
     if (fs.existsSync(filePath)) {
@@ -18,34 +17,43 @@ const mdLinks = (filePath, options) => {
         userPath = filePath;
       } else {
         userPath = path.resolve(filePath);
+        console.log(chalk.magenta(filePath));
       }
-      console.log(userPath);
       //Evalúa la extensión
       if (path.extname(userPath) === ".md") {
-        resolve("el archivo sí es md");
-        getLinks(filePath);
+        resolve("EL ARCHIVO ES MD: CONFIRMADO");
+        const links = getLinks(userPath);
+        console.log(links);
       } else {
-        reject('el archivo no es md')
+        reject('EL ARCHIVO NO ES MD: DENEGADO')
       }
     } else {
-      reject(new Error("La ruta no existe"));
+      reject(new Error("LA RUTA NO EXISTE: DENEGADO"));
     }
   });
 };
-const getLinks = (filePath) => {
-  console.log("aaa", filePath);
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, "utf-8", (error, data) => {
-      if (error) {
-        reject(error);
-      } else {
-        const regex = /\[(.*?)\]\((?!#)(.*?)\)/g;
-        const links = data.match(regex);
-        resolve(links);
-      }
-    });
-  });
-};
+
+//leer un archivo, buscar y extraer 
+//todos los enlaces en formato Markdown que contiene 
+//y devolverlos en un array a través de una promesa
+
+const getLinks = (userPath) => {
+  const data = fs.readFileSync(userPath, "utf-8");
+  const regex = /\[(.*?)\]\((?!#)(.*?)\)/g;
+  let links = [];
+  let result;
+  while ((result = regex.exec(data)) !== null){
+    let object ={
+      href: result[2],
+      text: result[1],
+      file: userPath
+    }
+    links.push(object);
+    console.log()
+  }
+  console.log('links: ', links);
+  return links;
+  };
 
 //resolve y reject son callbacks -los que pasamos con then y cacth
 module.exports = {
