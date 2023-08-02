@@ -1,4 +1,6 @@
-const { mdLinks, validateLinks }= require('../index');
+const { mdLinks,  getLinks,
+  validateLinks }= require('../index');
+const fs = require('fs');
 const axios = require('axios');
 
 const links =   [{
@@ -52,6 +54,62 @@ describe('isAbsolute', () => {
     relativePaths.forEach((relativePath) => {
       expect(path.isAbsolute(relativePath)).toBe(false);
     });
+  });
+});
+
+describe('getLinks', () => {
+  it('should return an array of links from the given file', () => {
+    const filePath = 'test-file.md';
+    const fileContent = `
+      [Google](https://www.google.com)
+      [GitHub](https://github.com)
+      [MDN Web Docs](https://developer.mozilla.org)
+    `;
+    fs.writeFileSync(filePath, fileContent, 'utf-8');
+
+    const expectedLinks = [
+      {
+        href: 'https://www.google.com',
+        text: 'Google',
+        file: filePath,
+      },
+      {
+        href: 'https://github.com',
+        text: 'GitHub',
+        file: filePath,
+      },
+      {
+        href: 'https://developer.mozilla.org',
+        text: 'MDN Web Docs',
+        file: filePath,
+      },
+    ];
+
+    const result = getLinks(filePath);
+    expect(result).toEqual(expectedLinks);
+    fs.unlinkSync(filePath);
+  });
+
+  it('should return an empty array if no links are found in the file', () => {
+    const filePath = 'test-file.md';
+    const fileContent = `
+      This is some random text without any links.
+    `;
+    fs.writeFileSync(filePath, fileContent, 'utf-8');
+
+    const result = getLinks(filePath);
+    expect(result).toEqual([]);
+    fs.unlinkSync(filePath);
+  });
+
+  it('should handle edge cases and return an empty array for an empty file', () => {
+    const filePath = 'empty-file.md';
+    const fileContent = '';
+    fs.writeFileSync(filePath, fileContent, 'utf-8');
+
+    const result = getLinks(filePath);
+    expect(result).toEqual([]);
+    fs.unlinkSync(filePath);
   });
 });
 
