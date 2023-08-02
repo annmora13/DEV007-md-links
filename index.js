@@ -26,7 +26,8 @@ const mdLinks = (filePath, options) => {
         reject('EL ARCHIVO NO ES MD: DENEGADO')
       }
     } else {
-      reject(new Error("LA RUTA NO EXISTE: DENEGADO"));
+      resolve([]);
+      //reject(new Error("LA RUTA NO EXISTE: DENEGADO"));
     }
   });
 };
