@@ -4,8 +4,6 @@ const chalk = require("chalk");
 const axios = require("axios");
 const { get } = require("https");
 
-//console.log(axios.isCancel('something'));
-
 const mdLinks = (filePath, options) => {
   return new Promise(async (resolve, reject) => {
     let userPath;
@@ -49,14 +47,69 @@ const getLinks = (userPath) => {
       file: userPath
     }
     links.push(object);
-    console.log()
   }
-  console.log('links: ', links);
   return links;
   };
+  
+
+const validateLinks = async (links) => {
+  const validatedLinks = await Promise.all(
+    links.map(async (link) => {
+      try {
+        const response = await axios.get(link.href);
+        console.log('response.status: ', response.status);
+        console.log('responde.statusText: ', response.statusText);
+        const finalLink= {
+          status: response.status, 
+          statusText: (response.status >= 200 && response.status < 400 )? 'ok' : 'fail',
+          };
+        return finalLink;
+      } catch (error) {
+        const finalLink= {
+        status: error.response ? error.response.status : 0,
+        statusText: error.response
+          ? error.response.statusText
+          : "No response",
+        }
+          return finalLink;
+      }
+    })
+  );
+
+  return validatedLinks;
+};
+  // const validateLinks = (links) => {
+  //   const promises = links.map((itsLink) => {
+  //     return axios.get(itsLink.href)
+  //       .then((response) => {
+  //           const finalLink= {
+  //               status: response.status,
+  //               statusText: response.status >= 200 && 
+  //               response.status < 400 ? 'ok' : 'fail',
+  //           }
+  //         console.log(finalLink);
+  //         return finalLink;
+  //         })
+  //       .catch((error) => {
+  //         console.log('error: ', error);
+  //         let status;
+  //         if (error.response) {
+  //           status = error.response.status;
+  //         }
+  //         return {
+  //           console.log();
+  //           ok: 'FAIL',
+  //         };
+  //       });
+  //   });
+  // //yars
+  //   return Promise.all(promises);
+  // };
+  
 
 //resolve y reject son callbacks -los que pasamos con then y cacth
 module.exports = {
   mdLinks,
   getLinks,
+  validateLinks
 };
