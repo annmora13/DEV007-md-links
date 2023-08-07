@@ -11,8 +11,8 @@ if(process.argv[3] === '--validate' || process.argv[4] === '--validate'){
 
 mdLinks(process.argv[2], optionsObject)
 .then(async (res) => {
-    console.log('validateLinks: ', await validateLinks(res));
-    console.log(chalk.blue(JSON.stringify(res)));
+    const validatedLinks = await validateLinks(res);
+    console.table(validatedLinks);
 })
     .catch((error) => {
         console.log(error);

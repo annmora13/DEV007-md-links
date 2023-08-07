@@ -7,7 +7,6 @@ const { get } = require("https");
 const mdLinks = (filePath, options) => {
   return new Promise(async (resolve, reject) => {
     let userPath;
-
     if (fs.existsSync(filePath)) {
       //Pregunta si la ruta es absoluta. Si sí la deja normal
       // y si no la convierte a absoluta.
@@ -22,11 +21,10 @@ const mdLinks = (filePath, options) => {
         const links = getLinks(userPath);
         resolve (links);
       } else {
-        reject('EL ARCHIVO NO ES MD: DENEGADO')
+        reject(new Error('EL ARCHIVO NO ES MD: DENEGADO'))
       }
     } else {
       resolve([]);
-      //reject(new Error("LA RUTA NO EXISTE: DENEGADO"));
     }
   });
 };
@@ -74,7 +72,6 @@ const validateLinks = async (links) => {
   return validatedLinks;
 };
 
-//resolve y reject son callbacks -los que pasamos con then y cacth
 module.exports = {
   mdLinks,
   getLinks,

@@ -1,3 +1,3 @@
-- [Buscador](https://www.pixar.com);
-- [Buscador - MDN](https://www.google.com);
-- [Buscador - MDN](https://www.pixar.com/error404);
+- [Buscador](https://www.pixar.com)
+- [Buscador - MDN](https://www.google.com)
+- [Buscador - MDN](https://www.pixar.com/error404)

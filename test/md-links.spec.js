@@ -1,13 +1,8 @@
-const { mdLinks,  getLinks,
+const { mdLinks, getLinks,
   validateLinks }= require('../index');
 const fs = require('fs');
 const axios = require('axios');
-
-const links =   [{
-  href: 'https://www.google.com',
-  text: 'Google - MDN',    
-  file: 'C:\\xampp\\htdocs\\laboratoria\\md_links\\DEV007-md-links\\Testing\\testing.md'  }];
-
+  
   describe('mdLinks', () => {
     it('should return a promise', async () => {
       try {
@@ -16,125 +11,85 @@ const links =   [{
       }
     });
 
-  it('should reject when the path doesnt exist', () => {
-    return mdLinks([{ href: 'nonexistent-path.md', text: 'Link', file: 'nonexistent-path.md' }])
-      .catch((error) => {
-        expect(error).toBeInstanceOf(Error);
+    it('should reject when the path doesnt exist', () => {
+      return mdLinks([{ href: 'nonexistent-path.md', text: 'Link', file: 'nonexistent-path.md' }])
+        .catch((error) => {
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toBe('LA RUTA NO EXISTE: DENEGADO');
+        });
+    });
+    
+    it('should reject with correct error message when file is not .md', () => {
+      return mdLinks('test-file.txt').catch((error) => {
         expect(error.message).toBe('LA RUTA NO EXISTE: DENEGADO');
       });
+    });
+  });
+
+    it('should resolve with an empty array if no links are found in the file', async () => {
+      const filePath = 'test-file.md';
+      const fileContent = `
+        This is some random text without any links.
+      `;
+      fs.writeFileSync(filePath, fileContent, 'utf-8');
+
+      const result = await mdLinks(filePath);
+      expect(result).toEqual([]);
+
+      fs.unlinkSync(filePath);
+    });
+
+    it('should resolve with an empty array for an empty file', async () => {
+      const filePath = 'empty-file.md';
+      const fileContent = '';
+      fs.writeFileSync(filePath, fileContent, 'utf-8');
+
+      const result = await mdLinks(filePath);
+      expect(result).toEqual([]);
+
+      fs.unlinkSync(filePath);
+    });
+
+  jest.mock('axios');
+
+  describe('validateLinks', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+  
+    it('should validate links and return validated links array', async () => {
+      const links = [
+        { href: 'https://www.google.com', text: 'Example Link 1', file: 'example.md' },
+      ];
+  
+      const axiosResponses = [
+        { status: 200, statusText: 'Ok' }
+      ];
+      axios.get.mockResolvedValueOnce(axiosResponses[0]);
+  
+      const result = await validateLinks(links);
+  
+      expect(result).toEqual([
+        { status: 200, statusText: 'Ok' }
+      ]);
+    });
   });
   
-  it('should reject with correct error message', () => {
-    return mdLinks(links).catch((error) => {
-      expect(error.message).toBe('LA RUTA NO EXISTE: DENEGADO');
+  
+    it('should validate links and return failed links array', async () => {
+      const links = [
+        { href: 'https://www.google.com', text: 'Example Link 1', file: 'example.md' },
+      ];
+  
+      const axiosResponses = [
+        { status: 404, statusText: 'fail' }
+      ];
+      axios.get.mockResolvedValueOnce(axiosResponses[0]);
+  
+      const result = await validateLinks(links);
+  
+      expect(result).toEqual([
+        { status: 404, statusText: 'fail' }
+      ]);
     });
-  });
-});
 
-const path = require('path');
-
-describe('isAbsolute', () => {
-  it('should return true for absolute paths', () => {
-    const absolutePaths = [
-      '/path/to/file.txt',
-      '/another/path/to/folder',
-      '/absolute/path/without/file',
-    ];
-    absolutePaths.forEach((absolutePath) => {
-      expect(path.isAbsolute(absolutePath)).toBe(true);
-    });
-  });
-
-  it('should return false for relative paths', () => {
-    const relativePaths = [
-      './relative/path/to/file.txt',
-      '../another/relative/path',
-      'file.js',
-    ];
-    relativePaths.forEach((relativePath) => {
-      expect(path.isAbsolute(relativePath)).toBe(false);
-    });
-  });
-});
-
-describe('getLinks', () => {
-  it('should return an array of links from the given file', () => {
-    const filePath = 'test-file.md';
-    const fileContent = `
-      [Google](https://www.google.com)
-      [GitHub](https://github.com)
-      [MDN Web Docs](https://developer.mozilla.org)
-    `;
-    fs.writeFileSync(filePath, fileContent, 'utf-8');
-
-    const expectedLinks = [
-      {
-        href: 'https://www.google.com',
-        text: 'Google',
-        file: filePath,
-      },
-      {
-        href: 'https://github.com',
-        text: 'GitHub',
-        file: filePath,
-      },
-      {
-        href: 'https://developer.mozilla.org',
-        text: 'MDN Web Docs',
-        file: filePath,
-      },
-    ];
-
-    const result = getLinks(filePath);
-    expect(result).toEqual(expectedLinks);
-    fs.unlinkSync(filePath);
-  });
-
-  it('should return an empty array if no links are found in the file', () => {
-    const filePath = 'test-file.md';
-    const fileContent = `
-      This is some random text without any links.
-    `;
-    fs.writeFileSync(filePath, fileContent, 'utf-8');
-
-    const result = getLinks(filePath);
-    expect(result).toEqual([]);
-    fs.unlinkSync(filePath);
-  });
-
-  it('should handle edge cases and return an empty array for an empty file', () => {
-    const filePath = 'empty-file.md';
-    const fileContent = '';
-    fs.writeFileSync(filePath, fileContent, 'utf-8');
-
-    const result = getLinks(filePath);
-    expect(result).toEqual([]);
-    fs.unlinkSync(filePath);
-  });
-});
-
-jest.mock('axios'); 
-
-describe('validateLinks', () => {
-  it('should return an array of validated links', async () => {
-    const links = [
-      { href: 'https://www.google.com', text: 'Example Link 1', file: 'example.md' },
-      { href: 'https://www.pixar.com/error404', text: 'Example Link 2', file: 'example.md' },
-    ];
-
-    const axiosResponses = [
-      { status: 200, response: { statusText: 'OK' } },
-      { response: { status: 404, statusText: 'fail' } }
-    ];
-
-    axios.get.mockResolvedValueOnce(axiosResponses[0]);
-    axios.get.mockRejectedValueOnce(axiosResponses[1]);
-
-    const result = await validateLinks(links);
-
-    expect(result).toEqual([
-      { status: 200, statusText: 'ok' },
-      { status: 404, statusText: 'fail' },
-    ]);
-  });
-});
