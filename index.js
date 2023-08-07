@@ -4,7 +4,8 @@ const chalk = require("chalk");
 const axios = require("axios");
 const { get } = require("https");
 
-const mdLinks = (filePath, options) => {
+const mdLinks = (filePath, 
+  options = { stats: false, validate: true}) => {
   return new Promise(async (resolve, reject) => {
     let userPath;
     if (fs.existsSync(filePath)) {
@@ -49,7 +50,6 @@ const getLinks = (userPath) => {
   return links;
   };
   
-
 const validateLinks = async (links) => {
   const validatedLinks = await Promise.all(
     links.map(async (link) => {
@@ -72,8 +72,20 @@ const validateLinks = async (links) => {
   return validatedLinks;
 };
 
+const statsLinks = (links) => new Promise((resolve) => {
+  const stats = {
+    total: links.length,
+    unique: new Set(links.map((link) => link.href)).size,
+  };
+  if (links === true) {
+    stats.broken = links.filter((link) => link.ok === 'fail').length;
+  }
+  resolve(stats);
+});
+
 module.exports = {
   mdLinks,
   getLinks,
-  validateLinks
+  validateLinks,
+  statsLinks
 };
