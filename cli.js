@@ -3,26 +3,23 @@ const process = require('process');
 const chalk = require('chalk');
 const optionsObject = {};
 
-if(process.argv[3] === '--validate' || process.argv[4] === '--validate'){
-    optionsObject.validate = true;
-}else{
-    optionsObject.validate = false;
-}
-
-// if(process.argv[3] === '--stats' || process.argv[4] === '--stats'){
-//     optionsObject.stats = false;
-// }else{
-//     optionsObject.stats = true;
-// }
-
 mdLinks(process.argv[2], optionsObject)
 .then(async (res) => {
-    console.log('optionsObjects: ', process.argv[3]);
+    console.log('optionsObjects: ', process.argv[3], process.argv[4]);
     const validatedLinks = await validateLinks(res);
     const statedLinks = await statsLinks(res);
-    console.table(validatedLinks);
-    console.table(statedLinks);
-    //console.table(statsLinks);
+        if(process.argv[3] === '--validate' || process.argv[4] === '--validate'){
+            optionsObject.validate = true;
+            console.table(validatedLinks);
+        }else{
+            optionsObject.validate = false;
+        }
+        if(process.argv[3] === '--stats' || process.argv[4] === '--stats'){
+            optionsObject.stats = true;
+            console.table(statedLinks);
+        }else{
+            optionsObject.stats = false;
+        }
 })
     .catch((error) => {
         console.log(error);
